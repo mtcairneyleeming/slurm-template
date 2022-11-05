@@ -25,6 +25,9 @@ mkdir output # create an output folder, which we will copy across to $DATA when 
 # copy across whatever files we need
 WORKING_DIR=$DATA/slurm-template 
 cp $WORKING_DIR/train.py ./train.py
+cp $WORKING_DIR/train.py ./config.py
+# copy the config to the output as well, so we know what this run was setup with
+cp $WORKING_DIR/train.py ./output/config.py 
 
 python train.py
 
