@@ -1,20 +1,18 @@
 import jax.numpy as jnp
 from jax import random
 
-# Quick config for testing w/o taking 6hrs
-
 
 # Set up all the parameters for the model
 
-n= 100;
+n= 400;
 x = jnp.arange(0, 1, 1/n)
 
-args = {"num_epochs": 4,  # will change back to 100 soon
+args = {"num_epochs": 100,  # will change back to 100 soon
         "learning_rate": 1.0e-3, 
-        "batch_size": 100, 
-        "hidden_dim1": 15,
-        "hidden_dim2": 10,
-        "z_dim": 5,
+        "batch_size": 10, 
+        "hidden_dim1": 35,
+        "hidden_dim2": 30,
+        "z_dim": 30,
         "x": x,
         "n": n,
         "gp_kernel": "exp_sq_kernel",
@@ -24,3 +22,4 @@ args = {"num_epochs": 4,  # will change back to 100 soon
         "num_chains": 4,
         "thinning": 1
         }
+

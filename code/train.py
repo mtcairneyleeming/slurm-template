@@ -3,11 +3,16 @@
 # general libraries
 import time
 import math
+import pickle
+
 
 # JAX
+import jax
 import jax.numpy as jnp
 from jax import random, lax, jit
-from jax.experimental import stax
+
+# in adjacent file
+from code import stax
 
 
 # Numpyro
@@ -16,9 +21,6 @@ import numpyro.distributions as dist
 from numpyro import optim
 from numpyro.infer import SVI, Trace_ELBO, Predictive
 
-import pickle
-
-from config import args
 
 
 
@@ -124,9 +126,10 @@ def vae_guide(batch, hidden_dim1, hidden_dim2, z_dim):
 
     
 
-@jit
 def epoch_train(gp, svi, args, rng_key, svi_state, num_train):
 
+    
+    @jit # moved to avoid JAX complaining about not being able to JIT a "Predictive" object
     def body_fn(i, val):
         rng_key_i = random.fold_in(rng_key, i) 
         rng_key_i, rng_key_ls, rng_key_var, rng_key_noise = random.split(rng_key_i, 4)
@@ -138,9 +141,10 @@ def epoch_train(gp, svi, args, rng_key, svi_state, num_train):
 
     return lax.fori_loop(0, num_train, body_fn, (0.0, svi_state)) #fori_loop(lower, upper, body_fun, init_val)
 
-@jit
+
 def eval_test(gp, svi, args, rng_key, svi_state, num_test):
 
+    @jit
     def body_fn(i, loss_sum):
         rng_key_i = random.fold_in(rng_key, i) 
         rng_key_i, rng_key_ls, rng_key_var, rng_key_noise = random.split(rng_key_i, 4)
@@ -168,8 +172,11 @@ def eval_test(gp, svi, args, rng_key, svi_state, num_test):
 
 ######### actually run it, if asked to:
 
-if __name__ == "__main__":
-
+def train(args):
+#if __name__ == "__main__":
+    print(jax.devices())
+    print(jax.default_backend())
+    
     
     gp_predictive = Predictive(GP, num_samples=args["batch_size"])
     ### 
@@ -184,7 +191,7 @@ if __name__ == "__main__":
 
     rng_key, rng_key_predict = random.split(random.PRNGKey(4))
     rng_key, rng_key_samp, rng_key_init = random.split(args["rng_key"], 3)
-    init_batch = gp_predictive(rng_key_predict, x=args["x"], gp_kernel = args["gp_kernel"])['y']
+    init_batch = gp_predictive(rng_key_predict, x=args["x"], gp_kernel = kernels[args["gp_kernel"]])['y']
     svi_state = svi.init(rng_key_init, init_batch)
 
     test_loss_list = []
@@ -201,7 +208,7 @@ if __name__ == "__main__":
         _, svi_state = epoch_train(gp_predictive, svi, args, rng_key_train, svi_state, num_train)
 
         num_test = 1000
-        test_loss = eval_test(gp_predictive ,svi, args, rng_key_test, svi_state, num_test)
+        test_loss = eval_test(gp_predictive,svi, args, rng_key_test, svi_state, num_test)
         test_loss_list += [test_loss]
 
         print(
