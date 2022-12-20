@@ -1,10 +1,17 @@
+# for saving model parameters/etc.
+import pickle
+import os
+
+# for the actual task
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision.transforms import ToTensor
 
-import pickle
+
+
+
 
 # Define model
 class NeuralNetwork(nn.Module):
@@ -114,13 +121,25 @@ def train(args):
     print("Done!")
 
 
-    torch.save(model, "output/model.pth")
+    
+    if os.path.isdir("output"): # running in an ARC job (using my submission script)
+        save_path = "output"
+    elif os.path.isdir("outputs/manual"): # running from the root directory of the git repo, not in a job
+        save_path = "outputs/manual"
+    else: # somewhere else?
+        save_path = "."
+
+    torch.save(model, save_path + "/model.pth")
     print("Saved PyTorch Model State to model.pth")
 
-    with open('output/train_loss_list', 'wb+') as file:
+    with open(save_path +'/train_loss_list', 'wb+') as file:
         pickle.dump(epoch_train_losses, file)
-        
-    with open('output/test_loss_list', 'wb+') as file:
+
+    with open(save_path + '/test_loss_list', 'wb+') as file:
         pickle.dump(epoch_test_losses, file)
+
+    print("Saved all outputs")
+    
+        
 
 
