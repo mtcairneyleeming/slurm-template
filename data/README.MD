@@ -1,0 +1,1 @@
+If your job requires training data/etc., my very brief tests suggest the jobs can't download stuff while they run, so download model parameters/images/etc. here, and it will all be copied across to $SCRATCH/data

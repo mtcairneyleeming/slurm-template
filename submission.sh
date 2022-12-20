@@ -9,14 +9,17 @@
 
 # TODO: add GPUs
 
-echo "CUDA Devices(s) allocated: $CUDA_VISIBLE_DEVICES"
-nvidia-smi
+
 
 export WORKING_DIR=$DATA/slurm-template
-export CONDA_PREFIX=$DATA/pv_env
+export CONDA_PREFIX=/data/coml-hawkes/lady6235/.conda/envs/numpyro10_torch_env
 
 
 module load Mamba # note we are not using Mamba to build the environment, we just need to load into it
+module load CUDA/11.6.0
+
+echo "CUDA Devices(s) allocated: $CUDA_VISIBLE_DEVICES"
+nvidia-smi
 
 # set the Anaconda environment, and activate it:
 source activate $CONDA_PREFIX
@@ -27,12 +30,15 @@ cd $SCRATCH
 mkdir output # create an output folder, which we will copy across to $DATA when done
 mkdir code
 
-# copy across whatever files we need
-cp -R $WORKING_DIR/code .
-cp $WORKING_DIR/init.py .
-cp $WORKING_DIR/config.py .
+# copy across only what we need:
+cp -R $WORKING_DIR/code   . # the code we've actually written
+cp $WORKING_DIR/init.py   . # standard init file
+cp $WORKING_DIR/config.py . # config file
+
+cp -R $WORKING_DIR/data   . # any pre-downloaded data as well
+
 # copy the config to the output as well, so we know what this run was setup with
-cp $WORKING_DIR/config.py ./output/config.py 
+cp $WORKING_DIR/config.py ./output/config.py
 
 tree
 
