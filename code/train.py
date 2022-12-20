@@ -21,8 +21,9 @@ from jax.scipy.special import logsumexp
 import numpy as np
 import time
 
-####### PyTorch
-
+# =================================
+# PyTorch 
+# =================================
 
 # Define model
 class NeuralNetwork(nn.Module):
@@ -84,8 +85,9 @@ def testing_step(dataloader, model, loss_fn, device):
     
     return test_loss
 
-
-################ JAX
+# =================================
+# JAX functions & definitions
+# =================================
 
 # A helper function to randomly initialize weights and biases
 # for a dense neural network layer
@@ -153,12 +155,18 @@ class FlattenAndCast(object):
         return np.ravel(np.array(pic, dtype=jnp.float32))
 
 
-############### Running both together
+# =================================
+# Run all training
+# =================================
 
 # the function run on ARC
 def train(args):
     
-    ######## PyTorch
+    # =================================
+    # PyTorch Training
+    # =================================
+    
+    
     # Get cpu or gpu device for training.
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Using {device} device")
@@ -203,7 +211,10 @@ def train(args):
         epoch_test_losses.append(test_losses)
     print("Done PyTorch!")
     
-    ## JAX stuff
+    # =================================
+    # JAX training
+    # =================================
+    
     print(jax.default_backend())
     print(jax.devices())
     
@@ -270,6 +281,11 @@ def train(args):
         print("Test set accuracy {}".format(test_acc))
 
     
+    # =================================
+    # Save learnt parameters, test losses in training, etc.
+    # =================================
+    
+    # work out where to save outputs:
     if os.path.isdir("output"): # running in an ARC job (using my submission script)
         save_path = "output"
     elif os.path.isdir("outputs/manual"): # running from the root directory of the git repo, not in a job
@@ -277,6 +293,8 @@ def train(args):
     else: # somewhere else?
         save_path = "."
 
+    # edit here to save your model    
+    
     torch.save(model, save_path + "/model.pth")
     print("Saved PyTorch Model State to model.pth")
 
