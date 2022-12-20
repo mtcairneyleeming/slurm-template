@@ -5,8 +5,10 @@ channels:
   - conda-forge
 dependencies:
   - python=3.8.15
-  #- jax[cuda]=0.3.25
-  #- jaxlib==0.3.25=cuda112py38*
+  - jax[cuda]=0.4.1
+  - jaxlib==0.4.1=cuda112py38*
+#  - jax[cuda]=0.3.25
+#  - jaxlib==0.3.25=cuda112py38*
   - numpyro=0.10.1
   - pytorch::pytorch==1.12.1=py3.8_cuda11.6*
   - pytorch::pytorch-cuda=11.6

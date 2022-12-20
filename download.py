@@ -23,3 +23,19 @@ test_data = datasets.FashionMNIST(
     download=True,
     transform=ToTensor(),
 )
+
+# Download training data from open datasets.
+jax_training_data = datasets.MNIST(
+    root="data",
+    train=True,
+    download=True,
+    transform=ToTensor(),
+)
+
+# Download test data from open datasets.
+jax_test_data = datasets.MNIST(
+    root="data",
+    train=False,
+    download=True,
+    transform=ToTensor(),
+)
